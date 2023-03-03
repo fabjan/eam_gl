@@ -1,0 +1,52 @@
+name: CI
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.2.0
+      - uses: erlef/setup-beam@v1.15.2
+        with:
+          otp-version: "25.2"
+          gleam-version: "0.26.1"
+          rebar3-version: "3"
+      - run: gleam format --check src test
+      - run: gleam deps download
+      - run: gleam test
+
+  build-and-deploy:
+    needs: test
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v3
+      - name: Setup Gleam
+        uses: erlef/setup-beam@v1.15.2
+        with:
+          otp-version: "25.2"
+          gleam-version: "0.26.1"
+          rebar3-version: "3"
+      - name: Build site
+        run: ./build.sh
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./build/dist
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
