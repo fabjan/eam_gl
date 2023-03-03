@@ -3,6 +3,7 @@ import gleam/int
 import gleam/option.{None, Option, Some}
 import eam_gl/ffi.{
   GL, console_log, gl_buffer_dimensions, gl_clear, gl_clear_color, gl_scissor,
+  set_elem_text,
 }
 
 type Rectangle {
@@ -10,7 +11,7 @@ type Rectangle {
 }
 
 type GameState {
-  GameState(debug: DebugInfo, raining_rectangle: Option(Rectangle))
+  GameState(debug: DebugInfo, raining_rectangle: Option(Rectangle), score: Int)
 }
 
 type DebugInfo {
@@ -19,7 +20,7 @@ type DebugInfo {
 
 pub fn main() {
   let debug = DebugInfo(0, 0)
-  ffi.start(GameState(debug, None), handle_frame, handle_click)
+  ffi.start(GameState(debug, None, 0), handle_frame, handle_click)
 }
 
 fn handle_click(state: GameState, _: GL, x: Int, y: Int) -> GameState {
@@ -32,7 +33,9 @@ fn handle_click(state: GameState, _: GL, x: Int, y: Int) -> GameState {
   let state = case click_hit {
     Some(True) -> {
       console_log("hit!")
-      GameState(state.debug, None)
+      let score = state.score + 1
+      set_elem_text("#score", str(score))
+      GameState(state.debug, None, score)
     }
     _ -> state
   }
@@ -85,7 +88,7 @@ fn spawn_rectangle_if_none(state: GameState, gl: GL) -> GameState {
       // global mutable state, nice!
       gl_clear_color(gl, r, g, b, 1.0)
 
-      GameState(state.debug, Some(rect))
+      GameState(state.debug, Some(rect), state.score)
     }
   }
 }
@@ -104,8 +107,8 @@ fn move_rectangle(state: GameState, gl: GL) -> GameState {
           rect.velocity,
         )
       case canvas_h < 0 - rect.y {
-        True -> GameState(state.debug, None)
-        False -> GameState(state.debug, Some(rect))
+        True -> GameState(state.debug, None, state.score)
+        False -> GameState(state.debug, Some(rect), state.score)
       }
     }
   }
@@ -115,12 +118,12 @@ fn debug_click(state: GameState, x: Int, y: Int) -> GameState {
   let DebugInfo(clicks, frames) = state.debug
   console_log("click at " <> str(x) <> ", " <> str(y))
 
-  GameState(DebugInfo(clicks + 1, frames), state.raining_rectangle)
+  GameState(DebugInfo(clicks + 1, frames), state.raining_rectangle, state.score)
 }
 
 fn debug_frame(state: GameState) -> GameState {
   let DebugInfo(clicks, frames) = state.debug
-  GameState(DebugInfo(clicks, frames + 1), state.raining_rectangle)
+  GameState(DebugInfo(clicks, frames + 1), state.raining_rectangle, state.score)
 }
 
 fn debug_log(state: GameState) {

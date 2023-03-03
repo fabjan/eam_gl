@@ -27,3 +27,6 @@ pub external fn gl_buffer_dimensions(gl: GL) -> #(Int, Int) =
 
 pub external fn console_log(s: String) -> Nil =
   "../eam_gl_ffi" "consoleLog"
+
+pub external fn set_elem_text(selector: String, text: String) -> Nil =
+  "../eam_gl_ffi" "setElemText"

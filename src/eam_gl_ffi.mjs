@@ -6,6 +6,11 @@ export function consoleLog(msg) {
     console.log(msg);
 }
 
+export function setElemText(selector, text) {
+  const elem = document.querySelector(selector);
+  elem.innerText = text;
+}
+
 export function start(
     state,
     handleFrame,
