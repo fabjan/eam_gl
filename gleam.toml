@@ -1,0 +1,11 @@
+name = "eam_gl"
+version = "0.1.0"
+description = "A Gleam game"
+target = "javascript"
+licences = ["Apache-2.0"]
+
+[dependencies]
+gleam_stdlib = "~> 0.26.0"
+
+[dev-dependencies]
+gleeunit = "~> 0.10"
