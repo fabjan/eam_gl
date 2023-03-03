@@ -26,7 +26,7 @@ jobs:
       - run: gleam test
 
   build-and-deploy:
-    needs: test
+    needs: lint-and-test
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
