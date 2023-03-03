@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "rollup": "^3.18.0"
+  },
+  "scripts": {
+    "build": "rollup build/dev/javascript/eam_gl/eam_gl.mjs --name eam_gl --file build/dist/eam_gl.js --format iife"
   }
 }

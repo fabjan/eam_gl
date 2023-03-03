@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 echo "===> Building eam_gl"
 gleam build --target javascript
 
@@ -9,6 +11,6 @@ cp -r src/index.html build/dist/
 
 echo "===> Creating bundle for browser"
 npm install
-rollup build/dev/javascript/eam_gl/eam_gl.mjs --name eam_gl --file build/dist/eam_gl.js --format iife
+npm run build
 
 echo "===> Done! Open build/dist/index.html in your browser to see the result."
